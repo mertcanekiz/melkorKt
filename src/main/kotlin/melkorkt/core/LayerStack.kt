@@ -2,7 +2,7 @@ package melkorkt.core
 
 class LayerStack {
     var layers: MutableList<Layer> = mutableListOf()
-    var layerInsertIndex: Int = 0
+    private var layerInsertIndex: Int = 0
 
     fun pushLayer(layer: Layer) {
         layers.add(layerInsertIndex, layer)

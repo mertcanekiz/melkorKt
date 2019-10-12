@@ -8,7 +8,7 @@ enum class EventType {
     MOUSE_BUTTON_PRESSED, MOUSE_BUTTON_RELEASED, MOUSE_MOVED, MOUSE_SCROLLED
 }
 
-class EventCategory(val categoryCode: Int) {
+class EventCategory(private val categoryCode: Int) {
 
     companion object {
         val NONE = EventCategory(0)

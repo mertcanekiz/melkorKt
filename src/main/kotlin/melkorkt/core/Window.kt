@@ -10,22 +10,21 @@ import org.lwjgl.system.MemoryUtil.*
 
 data class WindowProps(var title : String = "melkor", var width: Int = 1280, var height: Int = 720)
 
-class Window(val props: WindowProps) {
+class Window(private val props: WindowProps) {
     var window: Long
     var eventCallback : ((Event) -> Unit)? = null
-    var vsync : Boolean = false
-        get() { return field }
+    private var vsync : Boolean = false
         set (enabled) {
             if (enabled) glfwSwapInterval(1)
             else glfwSwapInterval(0)
             field = enabled
         }
-    var width : Int = 0
+    var width : Int
         get() { return props.width }
-        set(field) { props.width = field }
-    var height : Int = 0
+        set(width) { props.width = width }
+    var height : Int
         get() { return props.height }
-        set(field) { props.height = field }
+        set(height) { props.height = height }
 
     init{
         GLFWErrorCallback.createPrint(System.err).set()
@@ -38,39 +37,39 @@ class Window(val props: WindowProps) {
 
         println("window created $window")
 
-        glfwSetWindowCloseCallback(window) { _ ->
-            eventCallback!!.invoke(WindowCloseEvent())
+        glfwSetWindowCloseCallback(window) {
+            eventCallback?.invoke(WindowCloseEvent())
         }
 
         glfwSetWindowSizeCallback(window) { _, width , height ->
-            eventCallback!!.invoke(WindowResizeEvent(width, height))
+            eventCallback?.invoke(WindowResizeEvent(width, height))
         }
 
-        glfwSetKeyCallback(window) { window, key, scanCode, action, mods ->
+        glfwSetKeyCallback(window) { _, key, _, action, _ ->
             when (action) {
-                GLFW_PRESS -> eventCallback!!.invoke(KeyPressedEvent(key, 0))
-                GLFW_RELEASE -> eventCallback!!.invoke(KeyReleasedEvent(key))
-                GLFW_REPEAT -> eventCallback!!.invoke(KeyPressedEvent(key, 1))
+                GLFW_PRESS -> eventCallback?.invoke(KeyPressedEvent(key, 0))
+                GLFW_RELEASE -> eventCallback?.invoke(KeyReleasedEvent(key))
+                GLFW_REPEAT -> eventCallback?.invoke(KeyPressedEvent(key, 1))
             }
         }
 
-        glfwSetCharCallback(window) { window, keyCode ->
-            eventCallback!!.invoke(KeyTypedEvent(keyCode))
+        glfwSetCharCallback(window) { _, keyCode ->
+            eventCallback?.invoke(KeyTypedEvent(keyCode))
         }
 
-        glfwSetMouseButtonCallback(window) { window, button, action, mods ->
+        glfwSetMouseButtonCallback(window) { _, button, action, _ ->
             when (action) {
-                GLFW_PRESS -> eventCallback!!.invoke(MouseButtonPressedEvent(button))
-                GLFW_RELEASE -> eventCallback!!.invoke(MouseButtonReleasedEvent(button))
+                GLFW_PRESS -> eventCallback?.invoke(MouseButtonPressedEvent(button))
+                GLFW_RELEASE -> eventCallback?.invoke(MouseButtonReleasedEvent(button))
             }
         }
 
-        glfwSetScrollCallback(window) { window, xOffset, yOffset ->
-            eventCallback!!.invoke(MouseScrolledEvent(xOffset, yOffset))
+        glfwSetScrollCallback(window) { _, xOffset, yOffset ->
+            eventCallback?.invoke(MouseScrolledEvent(xOffset, yOffset))
         }
 
-        glfwSetCursorPosCallback(window) { window, xPos, yPos ->
-            eventCallback!!.invoke(MouseMovedEvent(xPos, yPos))
+        glfwSetCursorPosCallback(window) { _, xPos, yPos ->
+            eventCallback?.invoke(MouseMovedEvent(xPos, yPos))
         }
 
         glfwMakeContextCurrent(window)

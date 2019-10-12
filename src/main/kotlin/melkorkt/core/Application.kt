@@ -2,7 +2,6 @@ package melkorkt.core
 
 import melkorkt.events.Event
 import melkorkt.events.EventDispatcher
-import melkorkt.events.EventType
 import melkorkt.events.WindowCloseEvent
 import melkorkt.imgui.ImGuiLayer
 
@@ -10,10 +9,10 @@ import org.lwjgl.glfw.GLFW.glfwGetTime
 
 class Application {
     val window : Window = Window(WindowProps())
-    var running : Boolean = true
-    val layerStack = LayerStack()
-    var lastFrameTime : Float = 0.0f
-    val imGuiLayer : ImGuiLayer
+    private var running : Boolean = true
+    private val layerStack = LayerStack()
+    private var lastFrameTime : Float = 0.0f
+    private val imGuiLayer : ImGuiLayer
     companion object {
         val instance = Application()
     }
@@ -23,13 +22,14 @@ class Application {
         imGuiLayer = ImGuiLayer()
     }
 
-    fun onEvent(event: Event) {
+    private fun onEvent(event: Event) {
         println(event)
         val dispatcher = EventDispatcher(event)
         dispatcher.dispatch<WindowCloseEvent>(::onWindowClose)
+        layerStack.layers.forEach { it.onEvent(event) }
     }
 
-    fun onWindowClose(event: Event) : Boolean {
+    private fun onWindowClose(event: Event) : Boolean {
         running = false
         return true
     }

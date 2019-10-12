@@ -2,25 +2,19 @@ package melkorkt.imgui
 
 import imgui.ConfigFlag
 import imgui.ImGui
-import imgui.imgui.Context
 import imgui.ImGui.io
-import imgui.MutableProperty0
+import imgui.imgui.Context
 import imgui.impl.gl.ImplGL3
-import imgui.MINECRAFT_BEHAVIORS
 import imgui.impl.glfw.ImplGlfw
 import melkorkt.core.Application
 import melkorkt.core.Layer
 import uno.glfw.GlfwWindow
-import glm_.vec2.Vec2i
-import imgui.impl.GlfwClientApi
-import kotlin.reflect.KMutableProperty0
 
 class ImGuiLayer : Layer("ImGuiLayer") {
-    val time: Float = 0.0f
-    var implGL3 : ImplGL3? = null
-    var implGlfw : ImplGlfw? = null
-    var ctx : Context? = null
-    var show = true
+    private var implGL3 : ImplGL3? = null
+    private var implGlfw : ImplGlfw? = null
+    private var ctx : Context? = null
+    private var show = true
     override fun onAttach() {
         ctx = Context()
         val window = Application.instance.window.window

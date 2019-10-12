@@ -4,7 +4,7 @@ abstract class KeyEvent(val keyCode : Int) : Event() {
     override fun getCategoryFlags() = EventCategory.KEYBOARD or EventCategory.INPUT
 }
 
-class KeyPressedEvent(keyCode: Int, val repeatCount : Int) : KeyEvent(keyCode) {
+class KeyPressedEvent(keyCode: Int, private val repeatCount : Int) : KeyEvent(keyCode) {
     override fun getEventType() = EventType.KEY_PRESSED
     override fun getName() = "KeyPressedEvent"
     override fun toString() = "${getName()}: $keyCode ($repeatCount repeats)"
