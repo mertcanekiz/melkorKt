@@ -8,9 +8,9 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryUtil.*
 
-data class WindowProps(val title : String = "melkor", val width: Int = 640, val height: Int = 480)
+data class WindowProps(var title : String = "melkor", var width: Int = 1280, var height: Int = 720)
 
-class Window(props: WindowProps) {
+class Window(val props: WindowProps) {
     var window: Long
     var eventCallback : ((Event) -> Unit)? = null
     var vsync : Boolean = false
@@ -20,14 +20,23 @@ class Window(props: WindowProps) {
             else glfwSwapInterval(0)
             field = enabled
         }
+    var width : Int = 0
+        get() { return props.width }
+        set(field) { props.width = field }
+    var height : Int = 0
+        get() { return props.height }
+        set(field) { props.height = field }
 
     init{
         GLFWErrorCallback.createPrint(System.err).set()
         if (!glfwInit()) {
             println("Could not initialize GLFW")
         }
+        println("GLFW init")
 
         window = glfwCreateWindow(props.width, props.height, props.title, NULL, NULL)
+
+        println("window created $window")
 
         glfwSetWindowCloseCallback(window) { _ ->
             eventCallback!!.invoke(WindowCloseEvent())
@@ -75,9 +84,12 @@ class Window(props: WindowProps) {
         glfwDestroyWindow(window)
     }
 
+    fun clear() {
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+    }
+
     fun onUpdate() {
         glfwPollEvents()
-        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         glfwSwapBuffers(window)
     }
 

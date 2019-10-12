@@ -15,6 +15,7 @@ version = "1.0-SNAPSHOT"
 repositories {
     jcenter()
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -27,7 +28,7 @@ tasks.withType<KotlinCompile> {
 
 
 
-val lwjglVersion = "3.2.3"
+val lwjglVersion = "3.2.2"
 val jomlVersion = "1.9.17"
 
 val lwjglNatives = when (OperatingSystem.current()) {
@@ -42,78 +43,102 @@ repositories {
 }
 
 dependencies {
-    implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
 
-    implementation("org.lwjgl", "lwjgl")
-    implementation("org.lwjgl", "lwjgl-assimp")
-    implementation("org.lwjgl", "lwjgl-bgfx")
-    implementation("org.lwjgl", "lwjgl-cuda")
-    implementation("org.lwjgl", "lwjgl-egl")
-    implementation("org.lwjgl", "lwjgl-glfw")
-    implementation("org.lwjgl", "lwjgl-jawt")
-    implementation("org.lwjgl", "lwjgl-jemalloc")
-    implementation("org.lwjgl", "lwjgl-libdivide")
-    implementation("org.lwjgl", "lwjgl-llvm")
-    implementation("org.lwjgl", "lwjgl-lmdb")
-    implementation("org.lwjgl", "lwjgl-lz4")
-    implementation("org.lwjgl", "lwjgl-meow")
-    implementation("org.lwjgl", "lwjgl-nanovg")
-    implementation("org.lwjgl", "lwjgl-nfd")
-    implementation("org.lwjgl", "lwjgl-nuklear")
-    implementation("org.lwjgl", "lwjgl-odbc")
-    implementation("org.lwjgl", "lwjgl-openal")
-    implementation("org.lwjgl", "lwjgl-opencl")
-    implementation("org.lwjgl", "lwjgl-opengl")
-    implementation("org.lwjgl", "lwjgl-opengles")
-    implementation("org.lwjgl", "lwjgl-openvr")
-    implementation("org.lwjgl", "lwjgl-opus")
-    implementation("org.lwjgl", "lwjgl-ovr")
-    implementation("org.lwjgl", "lwjgl-par")
-    implementation("org.lwjgl", "lwjgl-remotery")
-    implementation("org.lwjgl", "lwjgl-rpmalloc")
-    implementation("org.lwjgl", "lwjgl-shaderc")
-    implementation("org.lwjgl", "lwjgl-sse")
-    implementation("org.lwjgl", "lwjgl-stb")
-    implementation("org.lwjgl", "lwjgl-tinyexr")
-    implementation("org.lwjgl", "lwjgl-tinyfd")
-    implementation("org.lwjgl", "lwjgl-tootle")
-    implementation("org.lwjgl", "lwjgl-vma")
-    implementation("org.lwjgl", "lwjgl-vulkan")
-    implementation("org.lwjgl", "lwjgl-xxhash")
-    implementation("org.lwjgl", "lwjgl-yoga")
-    implementation("org.lwjgl", "lwjgl-zstd")
-    runtimeOnly("org.lwjgl", "lwjgl", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-assimp", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-bgfx", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-jemalloc", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-libdivide", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-llvm", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-lmdb", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-lz4", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-meow", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-nanovg", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-nfd", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-nuklear", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-openal", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-opengles", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-openvr", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-opus", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-ovr", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-par", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-remotery", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-rpmalloc", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-shaderc", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-sse", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-stb", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-tinyexr", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-tinyfd", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-tootle", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-vma", classifier = lwjglNatives)
-    if (lwjglNatives == "natives-macos") runtimeOnly("org.lwjgl", "lwjgl-vulkan", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-xxhash", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-yoga", classifier = lwjglNatives)
-    runtimeOnly("org.lwjgl", "lwjgl-zstd", classifier = lwjglNatives)
-    implementation("org.joml", "joml", jomlVersion)
+    /*
+    Each renderer will need different dependencies.
+    Each one needs core.
+    OpenGL needs "gl", "glfw"
+    Vulkan needs "vk", "glfw"
+    JOGL needs "jogl"
+    OpenJFX needs "openjfx"
+
+    To get all the dependencies in one sweep, create an array of the strings needed and loop through them like below.
+    Any number of renderers can be added to the project like this however, you could all all of them with the array ["gl", "glfw", "core", "vk", "jogl", "openjfx"]
+    This example gets the OpenGL needed modules.
+     */
+    listOf("gl", "glfw", "core").forEach {
+        implementation("com.github.kotlin-graphics.imgui:imgui-$it:-SNAPSHOT")
+    }
+    // Look up which modules and versions of LWJGL are required and add setup the approriate natives.
+    configurations.compile.resolvedConfiguration.getResolvedArtifacts().forEach {
+        if (it.moduleVersion.id.group == "org.lwjgl") {
+            runtime("org.lwjgl:${it.moduleVersion.id.name}:${it.moduleVersion.id.version}:${lwjglNatives}")
+        }
+    }
+    implementation("com.github.kotlin-graphics.uno-sdk:uno-gl:3f32007ffe")
+    implementation("com.github.kotlin-graphics.uno-sdk:uno-core:3f32007ffe")
+
+    implementation("com.github.kotlin-graphics.glm:glm:6048c31425ae6110258e4b42165f1e636f8b5603")
+//    implementation("com.github.kotlin_graphics", "uno-sdk")
+//    implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
+
+    implementation("org.lwjgl", "lwjgl", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-assimp", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-bgfx", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-cuda", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-egl", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-glfw", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-jawt", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-jemalloc", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-libdivide", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-llvm", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-lmdb", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-lz4", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-meow", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-nanovg", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-nfd", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-nuklear", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-odbc", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-openal", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-opencl", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-opengl", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-opengles", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-openvr", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-opus", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-ovr", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-par", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-remotery", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-rpmalloc", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-sse", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-stb", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-tinyexr", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-tinyfd", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-tootle", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-vma", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-vulkan", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-xxhash", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-yoga", lwjglVersion)
+    implementation("org.lwjgl", "lwjgl-zstd", lwjglVersion)
+    runtimeOnly("org.lwjgl", "lwjgl", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-assimp", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-bgfx", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-glfw", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-jemalloc", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-libdivide", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-llvm", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-lmdb", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-lz4", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-meow", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-nanovg", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-nfd", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-nuklear", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-openal", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-opengl", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-opengles", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-openvr", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-opus", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-ovr", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-par", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-remotery", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-rpmalloc", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-sse", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-stb", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-tinyexr", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-tootle", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-vma", lwjglVersion, classifier = lwjglNatives)
+    if (lwjglNatives == "natives-macos") runtimeOnly("org.lwjgl", "lwjgl-vulkan", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-xxhash", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-yoga", lwjglVersion, classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-zstd", lwjglVersion, classifier = lwjglNatives)
 }
