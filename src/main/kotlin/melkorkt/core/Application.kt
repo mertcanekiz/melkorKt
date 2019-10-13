@@ -26,7 +26,10 @@ class Application {
         println(event)
         val dispatcher = EventDispatcher(event)
         dispatcher.dispatch<WindowCloseEvent>(::onWindowClose)
-        layerStack.layers.forEach { it.onEvent(event) }
+        for (layer in layerStack.layers) {
+            layer.onEvent(event);
+            if (event.handled) break
+        }
     }
 
     private fun onWindowClose(event: Event) : Boolean {
